@@ -2,6 +2,28 @@
 const config=window.WEEDSCOUT_FIREBASE_CONFIG;
 let auth=null,db=null,currentUser=null,ready=false,cloudError='',setDocFn=null,docFn=null,signInFn=null,logoutFn=null,savingTimer=null;
 const base='https://www.gstatic.com/firebasejs/13.0.0/';
+let cloudWriteState='idle';
+let localChangeVersion=0;
+let pendingWrite=Promise.resolve();
+
+/* The browser always saves locally; this indicator reflects the cloud too. */
+function updateHeaderStatus(){
+ const pill=document.getElementById('storagePill');
+ if(!pill)return;
+ let message='● Saved on this device';
+ if(config){
+  if(cloudError)message='● Cloud sync error · local copy saved';
+  else if(!authChecked)message='● Checking cloud login…';
+  else if(currentUser&&!ready)message='● Loading cloud progress…';
+  else if(currentUser&&ready){
+   if(cloudWriteState==='pending'||cloudWriteState==='saving')message='● Syncing to cloud…';
+   else if(cloudWriteState==='synced')message='● Saved on device + cloud';
+   else message='● Cloud connected';
+  }
+ }
+ pill.textContent=message;
+ pill.title=message.replace(/^● /,'');
+}
 
 /* First-visit sign-in choice. Authenticated returning visitors bypass it. */
 let authChecked=false;
@@ -45,6 +67,7 @@ const sameProgress=(a,b)=>{
 
 const refresh=()=>{
  renderWelcome();
+ updateHeaderStatus();
  const slot=document.getElementById('cloudStatus');if(!slot)return;
  const signIn=document.getElementById('cloudLoginButton'),signOut=document.getElementById('cloudLogoutButton');
  if(!config){slot.textContent='Local-only mode: progress is saved in this browser. See README.md to set up private cross-device sync.';signIn.textContent='How to enable cross-device sync';signOut.style.display='none';return}
@@ -55,14 +78,47 @@ const refresh=()=>{
 };
 window.addEventListener('weedscout:settings',refresh);
 const isFresh=s=>!Object.values(s.sessions||{}).some(x=>x.done||x.evidence||(x.checked||[]).some(Boolean))&&!(s.journal||[]).length&&!(s.experiments||[]).length&&!Object.values(s.portfolio||{}).some(Boolean);
-async function writeCloud(){if(!ready||!currentUser)return;try{const payload=window.WeedScoutApp.getState();await setDocFn(docFn(db,'profiles',currentUser.uid),{payload,updatedAt:new Date().toISOString()});window.WeedScoutApp.toast('Cloud backup updated.')}catch(e){cloudError=e.message||'Cloud write failed';refresh();console.warn(e)}}
-window.addEventListener('weedscout:change',()=>{if(!ready||!currentUser)return;clearTimeout(savingTimer);savingTimer=setTimeout(writeCloud,1300)});
+async function writeCloud(){
+ if(!ready||!currentUser)return false;
+ const userId=currentUser.uid;
+ const version=localChangeVersion;
+ const payload=window.WeedScoutApp.getState();
+ cloudWriteState='saving';
+ updateHeaderStatus();
+ // Serialize writes so a slow previous request cannot overwrite newer progress.
+ const save=async()=>{
+  try{
+   await setDocFn(docFn(db,'profiles',userId),{payload,updatedAt:new Date().toISOString()});
+   if(currentUser?.uid===userId){
+    cloudWriteState=version===localChangeVersion?'synced':'pending';
+    updateHeaderStatus();
+    if(version===localChangeVersion)window.WeedScoutApp.toast('Cloud backup updated.');
+   }
+   return true;
+  }catch(e){
+   if(currentUser?.uid===userId){cloudError=e.message||'Cloud write failed';cloudWriteState='error';refresh();}
+   console.warn(e);
+   return false;
+  }
+ };
+ const result=pendingWrite.then(save,save);
+ pendingWrite=result;
+ return result;
+}
+window.addEventListener('weedscout:change',()=>{
+ if(!ready||!currentUser)return;
+ localChangeVersion++;
+ cloudWriteState='pending';
+ updateHeaderStatus();
+ clearTimeout(savingTimer);
+ savingTimer=setTimeout(writeCloud,1300);
+});
 async function start(){if(!config){authChecked=true;refresh();return}try{
  const [{initializeApp},{getAuth,GoogleAuthProvider,signInWithPopup,signOut,onAuthStateChanged},{getFirestore,doc,getDoc,setDoc}]=await Promise.all([
   import(base+'firebase-app.js'),import(base+'firebase-auth.js'),import(base+'firebase-firestore.js')]);
  const application=initializeApp(config);auth=getAuth(application);db=getFirestore(application);docFn=doc;setDocFn=setDoc;
  signInFn=()=>signInWithPopup(auth,new GoogleAuthProvider());logoutFn=()=>signOut(auth);
- onAuthStateChanged(auth,async u=>{authChecked=true;ready=false;currentUser=u;cloudError='';if(u){guestMode=false;try{sessionStorage.removeItem('weedscout_offline_this_tab')}catch(e){}}refresh();if(!u)return;
+ onAuthStateChanged(auth,async u=>{authChecked=true;ready=false;currentUser=u;cloudError='';cloudWriteState='idle';clearTimeout(savingTimer);if(u){guestMode=false;try{sessionStorage.removeItem('weedscout_offline_this_tab')}catch(e){}}refresh();if(!u)return;
   try{
    const remoteDoc=await getDoc(doc(db,'profiles',u.uid));
    const local=window.WeedScoutApp.getState();
@@ -74,6 +130,7 @@ async function start(){if(!config){authChecked=true;refresh();return}try{
      if(useRemote){window.WeedScoutApp.replaceState(remote)}else{ready=true;await writeCloud()}
     } else {window.WeedScoutApp.replaceState(remote)}
    }else{ready=true;await writeCloud()}
+   if(remoteDoc.exists()&&remoteDoc.data().payload&&!cloudError)cloudWriteState='synced';
    ready=true;refresh();
   }catch(e){cloudError=e.message||'Unable to retrieve cloud progress';refresh();console.warn(e)}
  });refresh();
