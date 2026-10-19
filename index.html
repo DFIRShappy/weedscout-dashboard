@@ -5,17 +5,17 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#0b1520">
   <meta name="description" content="WeedScout student engineering command center — 60 tiny build sessions, engineering logs, experiments and portfolio evidence.">
-  <title>WeedScout | Engineering Command Center</title>
+  <title>WeedScout | Engineering Workshop</title>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
   <div class="app-shell">
     <aside class="sidebar" aria-label="Primary navigation">
-      <div class="brand"><div class="brand-mark"><span>W</span><i></i></div><div><strong>WEEDSCOUT</strong><small>ENGINEERING LAB</small></div></div>
+      <div class="brand"><div class="brand-mark"><span>W</span><i></i></div><div><strong>WEEDSCOUT</strong><small>STUDENT WORKSHOP</small></div></div>
       <div class="rail-eyebrow">WORKSPACE</div>
       <nav class="nav" id="sideNav">
         <button data-view="overview" class="nav-item active"><span class="nav-icon">▦</span> Overview</button>
-        <button data-view="sessions" class="nav-item"><span class="nav-icon">◫</span> My 60 sessions</button>
+        <button data-view="sessions" class="nav-item"><span class="nav-icon">◫</span> Learn & build</button>
         <button data-view="journal" class="nav-item"><span class="nav-icon">✎</span> Lab notebook</button>
         <button data-view="experiments" class="nav-item"><span class="nav-icon">⌁</span> Experiments</button>
         <button data-view="inventory" class="nav-item"><span class="nav-icon">⬡</span> Parts & budget</button>
@@ -23,12 +23,12 @@
         <button data-view="settings" class="nav-item mobile-settings"><span class="nav-icon">⚙</span> Backups</button>
       </nav>
       <div class="sidebar-spacer"></div>
-      <div class="sidebar-card"><div class="status-pip"></div><div><strong>PROJECT NORTH STAR</strong><p>Build it. Test it.<br>Know when to stop.</p></div></div>
+      <div class="sidebar-card"><div class="status-pip"></div><div><strong>THE GOAL</strong><p>Build it. Test it.<br>Know when to stop.</p></div></div>
       <button data-view="settings" class="nav-item settings-nav"><span class="nav-icon">⚙</span> Backups & sync</button>
-      <div class="rail-version">V1.2 · 60 GUIDED SESSIONS</div>
+      <div class="rail-version">V1.3 · STEP-BY-STEP</div>
     </aside>
     <div class="content-shell">
-      <header class="topbar"><div class="breadcrumb">WEEDSCOUT <span>/</span> <span id="currentViewName">MISSION CONTROL</span></div><div class="topbar-right"><span id="storagePill" class="storage-pill">● Saved on this device</span><span class="avatar" aria-label="Student workspace">WS</span></div></header>
+      <header class="topbar"><div class="breadcrumb">WEEDSCOUT <span>/</span> <span id="currentViewName">WORKSHOP</span></div><div class="topbar-right"><span id="storagePill" class="storage-pill">● Saved on this device</span><span class="avatar" aria-label="Student workspace">WS</span></div></header>
       <main id="app" aria-live="polite"></main>
       <footer class="footnote"><span>WEEDSCOUT © Student engineering workspace</span><span>Only measured results count. No demo data presented as science.</span></footer>
     </div>
@@ -38,6 +38,7 @@
   <input id="importFile" type="file" accept=".json,application/json" hidden>
   <script src="lessons.js"></script>
   <script src="firebase-config.js"></script>
+  <script src="workshop.js"></script>
   <script src="app.js"></script>
   <script type="module" src="cloud-sync.js"></script>
 </body>
