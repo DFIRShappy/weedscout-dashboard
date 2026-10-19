@@ -76,7 +76,7 @@ const help={
  ['Importing a package verifies the library can load.','A version number without a traceback is the checkpoint.']
  ],
  9:[
- ['Starter scripts are small programs you can inspect before running.','Keep the .py filenames exactly as provided.'],
+ ['Starter scripts are small programs you can inspect before running.','Use the Starter files link below. On GitHub, open each file, click Raw, then Save As in 02_code. No ZIP is required.'],
  ['The program draws a test image so the expected answer is known.','Run it from the code folder with your .venv Python.'],
  ['Open the output, not just the PowerShell window.','Use File Explorer to find sample_target.png.'],
  ['Identify the colored target, background and reference ticks.','Point to each area on the image.'],
@@ -101,6 +101,10 @@ const tipByAction=[
 ];
 const resource={
  4:[['Official Python downloads','https://www.python.org/downloads/']],
+ 9:[['Starter files + setup instructions','https://github.com/DFIRShappy/weedscout-dashboard/tree/main/starter-code'],
+    ['make_sample.py','https://github.com/DFIRShappy/weedscout-dashboard/blob/main/starter-code/make_sample.py']],
+ 10:[['find_blue_marker.py','https://github.com/DFIRShappy/weedscout-dashboard/blob/main/starter-code/find_blue_marker.py']],
+ 14:[['safe_decision_demo.py','https://github.com/DFIRShappy/weedscout-dashboard/blob/main/starter-code/safe_decision_demo.py']],
  8:[['Python virtual environments','https://docs.python.org/3/library/venv.html'],['OpenCV Python tutorials','https://docs.opencv.org/4.x/d6/d00/tutorial_py_root.html']],
  17:[['Raspberry Pi documentation','https://www.raspberrypi.com/documentation/']],
  18:[['Raspberry Pi setup guide','https://www.raspberrypi.com/documentation/computers/getting-started.html']]
@@ -136,9 +140,19 @@ function demoKind(l,index,step,base){
  return base;
 }
 function h(s){return String(s).replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]))}
-function diagram(kind){
+function terminalExample(l){
+ if(l.id===4)return ['py -3.11 --version','Python 3.11.x'];
+ if(l.id===5)return ['py -3.11 hello.py','WeedScout is alive!'];
+ if(l.id===6)return ['py -3.11 distance.py','2.5'];
+ if(l.id===8)return ['python -m pip install opencv-python numpy','Installation complete / version shown'];
+ if(l.id===9)return ['python make_sample.py','Saved sample_target.png'];
+ if(l.id===10)return ['python find_blue_marker.py sample_target.png','Marker center: X=290, Y=220'];
+ if(l.id===14)return ['python safe_decision_demo.py','TARGET / SKIP decisions printed'];
+ return ['Run the lesson command','Read the actual output carefully'];
+}
+function diagram(kind,l,index){
  if(kind==='folders')return '<div class="coach-folder-tree"><div>📁 <b>WeedScout</b></div><div class="tree-inner">📁 00_admin<br>📁 01_research<br>📁 02_code<br>📁 03_photos<br><span class="tree-inner">📁 raw &nbsp; 📁 labels</span><br>📁 04_test_data<br>📁 05_models<br>📁 06_hardware<br>📁 07_portfolio</div></div><small>Example folder layout. Build these in File Explorer.</small>';
- if(kind==='terminal')return '<div class="coach-terminal"><div class="coach-terminal-bar"><span>● ● ●</span> Windows PowerShell · example</div><div class="coach-terminal-body"><div>&gt; <span class="type-line">py -3.11 hello.py</span></div><div class="terminal-result">WeedScout is alive!</div><div>&gt; <span class="coach-caret">▌</span></div></div></div><small>This is an illustration, not a real command run.</small>';
+ if(kind==='terminal'){const ex=terminalExample(l);return '<div class="coach-terminal"><div class="coach-terminal-bar"><span>● ● ●</span> Terminal · illustration</div><div class="coach-terminal-body"><div>&gt; <span class="type-line">'+h(ex[0])+'</span></div><div class="terminal-result">'+h(ex[1])+'</div><div>&gt; <span class="coach-caret">▌</span></div></div></div><small>This is a sample display, not an actual command run.</small>'}
  if(kind==='board')return '<div class="coach-board"><span class="board-label">TEST BOARD · TOP VIEW</span><i class="target t1">A</i><i class="target t2">B</i><i class="target t3">C</i><i class="target t4">D</i><i class="target t5">E</i><div class="board-ruler"><span>0</span><span>10 cm</span></div><div class="camera-reticle"></div></div><small>Keep the camera overhead and include a known 10 cm scale.</small>';
  if(kind==='vision')return '<div class="coach-vision"><div class="vision-target"></div><div class="vision-box"><i class="vision-cross"></i></div><span class="vision-label">Detected center</span><div class="vision-scan"></div></div><small>The moving outline shows the idea; real accuracy must be measured.</small>';
  if(kind==='decision')return '<div class="coach-decision"><div class="coach-node">See a possible weed</div><span class="coach-arrow">↓</span><div class="coach-node">Check again: is it reliable?</div><div class="coach-branches"><div><span>YES ↓</span><div class="coach-node small-node">Allowed to consider action</div></div><div><span>NO ↓</span><div class="coach-node small-node stop-node">SKIP · protect turf</div></div></div></div><small>A safe decision can be “do nothing.”</small>';
@@ -152,7 +166,7 @@ function diagram(kind){
 function renderGuide(l,index){
  const g=guide(l,index);
  return '<div class="coach-explainer"><div class="coach-overline">WHY THIS STEP MATTERS</div><p>'+h(g.why)+'</p></div>'+
- '<div class="coach-diagram" role="img" aria-label="Illustration for '+h(g.title)+'">'+diagram(g.demo)+'</div>'+
+ '<div class="coach-diagram" role="img" aria-label="Illustration for '+h(g.title)+'">'+diagram(g.demo,l,index)+'</div>'+
  '<div class="coach-check"><strong>Check your work</strong><p>'+h(g.check)+'</p></div>'+
  '<details class="coach-help"><summary>I need a hint</summary><p>'+h(g.tip)+'</p><p class="coach-help-extra">'+h(l.stuck||'')+'</p></details>'+
  (g.resources.length?'<div class="coach-resources">Helpful reference: '+g.resources.map(([name,url])=>'<a href="'+h(url)+'" target="_blank" rel="noopener noreferrer">'+h(name)+' ↗</a>').join(' · ')+'</div>':'');
