@@ -1,4 +1,4 @@
-/* Extracted from WeedScout workbook v1.1; keep student progress separate from lesson definitions. */
+/* WeedScout student lessons. Content and user progress are stored separately. */
 window.WEEDSCOUT_LESSONS = [
   {
     "id": 1,
@@ -49,7 +49,7 @@ window.WEEDSCOUT_LESSONS = [
     "steps": [
       "Press Win+E to open File Explorer and click Documents.",
       "Right-click a blank area, select New > Folder, name it `WeedScout`.",
-      "Open that folder and make the eight named folders listed earlier (use New > Folder).",
+      "In your WeedScout folder, make these eight folders, one at a time: 00_admin, 01_research, 02_code, 03_photos, 04_test_data, 05_models, 06_hardware, 07_portfolio.",
       "Inside `03_photos`, make `raw` and `labels` folders.",
       "Create `00_admin/progress_log.txt` using Notepad and type: `Date | Session | What worked | Problem | Next step`. Save. Move `WeedScout_project_rules.txt` from Desktop into `00_admin`."
     ],
@@ -146,7 +146,7 @@ window.WEEDSCOUT_LESSONS = [
       "Run `py -3.11 -m venv .venv` to create an isolated Python environment.",
       "Run `.\\.venv\\Scripts\\python.exe -m pip install --upgrade pip`.",
       "Run `.\\.venv\\Scripts\\python.exe -m pip install opencv-python numpy`.",
-      "Run `.\\.venv\\Scripts\\python.exe -c \"import cv2; print(cv2.__version__)\"` (outer shell quoting exactly as shown in the appendix)."
+      "Run `.\\.venv\\Scripts\\python.exe -c \"import cv2; print(cv2.__version__)\"`. Check that it prints an OpenCV version number without an error."
     ],
     "done": "You see an OpenCV version number without a traceback.",
     "stuck": "If pip fails, copy the last 15 error lines to GPT. Never use a random install workaround without understanding it.",
@@ -161,7 +161,7 @@ window.WEEDSCOUT_LESSONS = [
     "time": "25-40 minutes",
     "safety": "Standard desk activity",
     "steps": [
-      "Extract the starter code ZIP into `02_code` (or copy its `.py` files there).",
+      "Open the Starter files link below. Save `make_sample.py`, `find_blue_marker.py` and `safe_decision_demo.py` into your `02_code` folder (on GitHub: open each file, click Raw, then Save As).",
       "Run `.\\.venv\\Scripts\\python.exe make_sample.py` from `02_code`.",
       "Open the new `sample_target.png` using File Explorer.",
       "Point to the blue square, green background and black calibration ticks.",
@@ -278,7 +278,7 @@ window.WEEDSCOUT_LESSONS = [
       "Arrange one blue marker on the test mat.",
       "Record a 15-30 second video showing the image, detector output and SKIP decision example.",
       "Describe what code does and what it DOES NOT do (not weed AI yet).",
-      "Save video as `06_videos/YYYY-MM-DD_S15_marker-demo.mp4`.",
+      "Save the demo video in your existing `07_portfolio` folder as `YYYY-MM-DD_S15_marker-demo.mp4`.",
       "Ask a parent one question: 'Can you tell from my demo what it measures?'"
     ],
     "done": "Short demo is saved; your parent can describe the functionality accurately.",
@@ -714,7 +714,7 @@ window.WEEDSCOUT_LESSONS = [
     "steps": [
       "Read current official Ultralytics installation and fine-tuning docs and check supported dependencies.",
       "Use the dedicated venv and run `.\\.venv\\Scripts\\python.exe -m pip install ultralytics` (large download possible).",
-      "Create `dataset/data.yaml` listing train and validation image paths and class names; compare against official example in appendix.",
+      "Create `dataset/data.yaml` listing your train and validation image paths and class names; compare its layout with the current official Ultralytics dataset documentation.",
       "Run the starter training script with small YOLO model (official current example uses `yolo26n.pt`), `epochs=30`, `imgsz=640`, conservative workers on Windows.",
       "Record training time, model version, data counts and the output path. Keep the original weights and plots."
     ],
